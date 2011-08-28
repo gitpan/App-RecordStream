@@ -1,10 +1,9 @@
 --- #YAML:1.0
 name:               App-RecordStream
-version:            3.4
+version:            3.4_01
 abstract:           System for commandline analysis of data
 author:
-    - Ben Bernard - perlhacker@benjaminbernard.com
-Keith Amling - keith.amling@gmail.com
+    - Ben Bernard - perlhacker@benjaminbernard.com Keith Amling - keith.amling@gmail.com
 license:            MIT
 distribution_type:  module
 configure_requires:
