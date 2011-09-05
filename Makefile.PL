@@ -3,13 +3,13 @@ use ExtUtils::MakeMaker;
 use strict;
 use warnings;
 
-use BuildTools qw(get_bin_scripts get_pms);
+require 'BuildTools.recbuildtool';
 
-my @scripts = get_bin_scripts();
+my @scripts = BuildTools::get_bin_scripts();
 
 WriteMakefile(
    NAME          => 'App::RecordStream',
-   VERSION       => '3.5',
+   VERSION       => '3.5_01',
    EXE_FILES     => [ map { "bin/$_" } @scripts ],
    ABSTRACT_FROM => 'README.pod',
    AUTHOR        => 'Ben Bernard - perlhacker@benjaminbernard.com '
@@ -61,6 +61,6 @@ WriteMakefile(
    },
 
    PM => { 
-      (map {( "lib/$_" => "\$(INST_LIB)/$_" )} get_pms()),
+      (map {( "lib/$_" => "\$(INST_LIB)/$_" )} BuildTools::get_pms()),
    },
 );
