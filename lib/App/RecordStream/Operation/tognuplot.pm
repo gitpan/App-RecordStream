@@ -1,7 +1,5 @@
 package App::RecordStream::Operation::tognuplot;
 
-our $VERSION = "3.4";
-
 use strict;
 use warnings;
 
@@ -51,13 +49,15 @@ sub init {
 
    $png_file .= '.png' unless ( $png_file =~ m/\.png$/ );
 
-   if ( open(my $fh, '|-', $gnuplot_command) ) {
-      close $fh;
-   }
-   else {
-      warn "Could not run gnuplot command: $gnuplot_command: $!\n";
-      warn "May want to specify a binary with --gnuplot-command\n";
-      exit 0;
+   if ( ! $dump_to_screen ) {
+      if ( open(my $fh, '|-', $gnuplot_command) ) {
+         close $fh;
+      }
+      else {
+         warn "Could not run gnuplot command: $gnuplot_command: $!\n";
+         warn "May want to specify a binary with --gnuplot-command\n";
+         exit 0;
+      }
    }
 
    my ($tempfh, $tempfile) = tempfile();

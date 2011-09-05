@@ -1,7 +1,5 @@
 package App::RecordStream::Aggregator::Ord2Bivariate;
 
-our $VERSION = "3.4";
-
 use strict;
 use lib;
 
@@ -10,11 +8,9 @@ use App::RecordStream::Aggregator;
 
 use base 'App::RecordStream::Aggregator::MapReduce::FieldSet';
 
-sub new
-{
-   my ($class, @args) = @_;
-   return $class->SUPER::new(@args);
-}
+#sub new -- passed through
+
+#sub new_from_valuation -- passed through
 
 sub map_fields
 {

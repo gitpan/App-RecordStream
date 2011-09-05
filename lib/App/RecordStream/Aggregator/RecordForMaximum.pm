@@ -1,20 +1,30 @@
 package App::RecordStream::Aggregator::RecordForMaximum;
 
-our $VERSION = "3.4";
-
 use strict;
 use lib;
+
+use App::RecordStream::Aggregator::MapReduce;
+use App::RecordStream::DomainLanguage::Registry;
+use App::RecordStream::DomainLanguage::Valuation::KeySpec;
 
 use base 'App::RecordStream::Aggregator::MapReduce';
 
 sub new
 {
+    my $class = shift;
+    my $field = shift;
+
+    return new_from_valuation($class, App::RecordStream::DomainLanguage::Valuation::KeySpec->new($field));
+}
+
+sub new_from_valuation
+{
    my $class = shift;
-   my ($field) = @_;
+   my ($valuation) = @_;
 
    my $this =
    {
-      'field' => $field,
+      'valuation' => $valuation,
    };
    bless $this, $class;
 
@@ -25,7 +35,7 @@ sub map
 {
    my ($this, $record) = @_;
 
-   my $value = ${$record->guess_key_from_spec($this->{'field'})};
+   my $value = $this->{'valuation'}->evaluate_record($record);
 
    return [$value, $record];
 }
@@ -80,5 +90,10 @@ App::RecordStream::Aggregator::register_aggregator('recformax', __PACKAGE__);
 App::RecordStream::Aggregator::register_aggregator('recformaximum', __PACKAGE__);
 App::RecordStream::Aggregator::register_aggregator('recordformax', __PACKAGE__);
 App::RecordStream::Aggregator::register_aggregator('recordformaximum', __PACKAGE__);
+
+App::RecordStream::DomainLanguage::Registry::register_vfn(__PACKAGE__, 'new_from_valuation', 'recformax', 'VALUATION');
+App::RecordStream::DomainLanguage::Registry::register_vfn(__PACKAGE__, 'new_from_valuation', 'recformaximum', 'VALUATION');
+App::RecordStream::DomainLanguage::Registry::register_vfn(__PACKAGE__, 'new_from_valuation', 'recordformax', 'VALUATION');
+App::RecordStream::DomainLanguage::Registry::register_vfn(__PACKAGE__, 'new_from_valuation', 'recordformaximum', 'VALUATION');
 
 1;

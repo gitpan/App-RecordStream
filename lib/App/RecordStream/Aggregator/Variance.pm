@@ -1,20 +1,17 @@
 package App::RecordStream::Aggregator::Variance;
 
-our $VERSION = "3.4";
-
 use strict;
 use lib;
 
 use App::RecordStream::Aggregator::Ord2Univariate;
 use App::RecordStream::Aggregator;
+use App::RecordStream::DomainLanguage::Registry;
 
 use base 'App::RecordStream::Aggregator::Ord2Univariate';
 
-sub new
-{
-   my ($class, @args) = @_;
-   return $class->SUPER::new(@args);
-}
+#sub new -- passed through
+
+#sub new_from_valuation -- passed through
 
 sub squish
 {
@@ -41,6 +38,9 @@ sub short_usage
 
 App::RecordStream::Aggregator::register_aggregator('var', __PACKAGE__);
 App::RecordStream::Aggregator::register_aggregator('variance', __PACKAGE__);
+
+App::RecordStream::DomainLanguage::Registry::register_vfn(__PACKAGE__, 'new_from_valuation', 'var', 'VALUATION');
+App::RecordStream::DomainLanguage::Registry::register_vfn(__PACKAGE__, 'new_from_valuation', 'variance', 'VALUATION');
 
 1;
 

@@ -1,20 +1,17 @@
 package App::RecordStream::Aggregator::Correlation;
 
-our $VERSION = "3.4";
-
 use strict;
 use lib;
 
 use App::RecordStream::Aggregator::Ord2Bivariate;
 use App::RecordStream::Aggregator;
+use App::RecordStream::DomainLanguage::Registry;
 
 use base 'App::RecordStream::Aggregator::Ord2Bivariate';
 
-sub new
-{
-   my ($class, @args) = @_;
-   return $class->SUPER::new(@args);
-}
+#sub new -- passed through
+
+#sub new_from_valuation -- passed through
 
 sub squish
 {
@@ -40,7 +37,12 @@ sub short_usage
 }
 
 App::RecordStream::Aggregator::register_aggregator('corr', __PACKAGE__);
+App::RecordStream::Aggregator::register_aggregator('correl', __PACKAGE__);
 App::RecordStream::Aggregator::register_aggregator('correlation', __PACKAGE__);
+
+App::RecordStream::DomainLanguage::Registry::register_vfn(__PACKAGE__, 'new_from_valuation', 'corr', 'VALUATION', 'VALUATION');
+App::RecordStream::DomainLanguage::Registry::register_vfn(__PACKAGE__, 'new_from_valuation', 'correl', 'VALUATION', 'VALUATION');
+App::RecordStream::DomainLanguage::Registry::register_vfn(__PACKAGE__, 'new_from_valuation', 'correlation', 'VALUATION', 'VALUATION');
 
 1;
 

@@ -1,22 +1,29 @@
 package App::RecordStream::Aggregator::MapReduce::Field;
 
-our $VERSION = "3.4";
-
 use strict;
 use lib;
 
 use App::RecordStream::Aggregator::MapReduce;
+use App::RecordStream::DomainLanguage::Valuation::KeySpec;
 
 use base 'App::RecordStream::Aggregator::MapReduce';
 
 sub new
 {
    my $class = shift;
-   my ($field) = @_;
+   my $field = shift;
+
+   return new_from_valuation($class, App::RecordStream::DomainLanguage::Valuation::KeySpec->new($field));
+}
+
+sub new_from_valuation
+{
+   my $class = shift;
+   my $valuation = shift;
 
    my $this =
    {
-      'field' => $field,
+      'valuation' => $valuation,
    };
    bless $this, $class;
 
@@ -27,12 +34,12 @@ sub map
 {
    my ($this, $record) = @_;
 
-   if(!defined($this->{'field'}))
+   if(!defined($this->{'valuation'}))
    {
        # oopsie, consider missing/undef fields not to count and return the empty cookie
        return undef;
    }
-   return $this->map_field(${$record->guess_key_from_spec($this->{'field'})});
+   return $this->map_field($this->{'valuation'}->evaluate_record($record));
 }
 
 sub map_field

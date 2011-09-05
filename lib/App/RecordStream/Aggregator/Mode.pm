@@ -1,18 +1,16 @@
 package App::RecordStream::Aggregator::Mode;
 
-our $VERSION = "3.4";
-
 use strict;
 use lib;
 
 use App::RecordStream::Aggregator::InjectInto::Field;
+use App::RecordStream::DomainLanguage::Registry;
+
 use base qw(App::RecordStream::Aggregator::InjectInto::Field);
 
-sub new
-{
-   my $class = shift;
-   return $class->SUPER::new(@_);
-}
+#sub new -- passed through
+
+#sub new_from_valuation -- passed through
 
 sub initial {
    return {};
@@ -64,5 +62,7 @@ USAGE
 }
 
 App::RecordStream::Aggregator::register_aggregator('mode', __PACKAGE__);
+
+App::RecordStream::DomainLanguage::Registry::register_vfn(__PACKAGE__, 'new_from_valuation', 'mode', 'VALUATION');
 
 1;

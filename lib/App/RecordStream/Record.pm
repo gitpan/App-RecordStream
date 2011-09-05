@@ -136,9 +136,10 @@ together in an array reference.
 
 Produces a comparator function (which takes two records and returns similarly
 to <=> or cmp) from the provided $spec.  $spec should be like "<field>" for
-lexical sort, or "<field>=<sign><type>" where <sign> is "+" or "" for ascending
-or "-" for descending and type is one of the known types.  Type include "",
-"l", "lex", or "lexical" for lexical sort (using cmp), and "n", "num" or
+lexical sort, or "<field>=<sign><type><star>" where <sign> is "+" or "" for
+ascending or "-" for descending and type is one of the known types and <star>
+is "*" for sorting "ALL" to the end or "" for normal behaviour.  Type include
+"", "l", "lex", or "lexical" for lexical sort (using cmp), and "n", "num" or
 "numeric" for numeric sort (using <=>).
 
 =item @sorted_records = App::RecordStream::Record::sort($records_ref, @specs)
@@ -149,8 +150,6 @@ records.
 =back
 
 =cut
-
-our $VERSION = "3.4";
 
 use strict;
 use warnings;
@@ -198,33 +197,61 @@ sub get_comparators
 }
 
 {
-   my %parsed_comparators;
    sub get_comparator
+   {
+      my ($comparator, $field) = get_comparator_and_field(@_);
+
+      return $comparator;
+   }
+
+   sub get_comparator_and_field
    {
       my $spec = shift;
 
-      my $parsed = $parsed_comparators{$spec};
-      return $parsed if ( $parsed ) ;
-
-      my ($field, $direction, $comparator);
+      my ($field, $direction, $comparator_name, $all_hack);
 
       if ( $spec =~ m/=/ )
       {
-         ($field, $direction, $comparator) = $spec =~ /^(.*)=([-+])?(.*)$/;
+         ($field, $direction, $comparator_name, $all_hack) = $spec =~ /^(.*)=([-+]?)(.*?)(\*?)$/;
       }
       else
       {
-         ($field, $direction, $comparator) = ($spec, undef, 'lexical');
+         ($field, $direction, $comparator_name, $all_hack) = ($spec, undef, 'lexical', '');
       }
 
       $direction = '+' unless ( $direction );
+      $all_hack = $all_hack ? 1 : 0;
 
-      my $func = $comparators{$comparator};
-      die "Not a valid comparator: $comparator" unless ( $func );
+      my $func = $comparators{$comparator_name};
+      die "Not a valid comparator: $comparator_name" unless ( $func );
 
-      return sub {
+      my $comparator = sub {
          my ($this, $that) = @_;
-         my $val = $func->(${$this->guess_key_from_spec($field)}, ${$that->guess_key_from_spec($field)});
+
+         my $val = undef;
+
+         if ( $all_hack )
+         {
+            my $this_value = ${$this->guess_key_from_spec($field)};
+            my $that_value = ${$that->guess_key_from_spec($field)};
+            if ( $this_value eq 'ALL' && $that_value ne 'ALL' )
+            {
+               $val = 1;
+            }
+            if ( $this_value ne 'ALL' && $that_value eq 'ALL' )
+            {
+               $val = -1;
+            }
+            if ( $this_value eq 'ALL' && $that_value eq 'ALL' )
+            {
+               return 0;
+            }
+         }
+
+         if ( ! defined $val )
+         {
+            $val = $func->(${$this->guess_key_from_spec($field)}, ${$that->guess_key_from_spec($field)});
+         }
 
          if ( $direction eq '-' )
          {
@@ -232,7 +259,9 @@ sub get_comparators
          }
 
          return $val;
-      }
+      };
+
+      return ($comparator, $field);
    }
 }
 
