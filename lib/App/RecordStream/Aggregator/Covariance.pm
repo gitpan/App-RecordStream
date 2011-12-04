@@ -3,7 +3,7 @@ package App::RecordStream::Aggregator::Covariance;
 our $VERSION = "3.4";
 
 use strict;
-use lib;
+use warnings;
 
 use App::RecordStream::Aggregator::Ord2Bivariate;
 use App::RecordStream::Aggregator;
@@ -17,25 +17,24 @@ use base 'App::RecordStream::Aggregator::Ord2Bivariate';
 
 sub squish
 {
-   my ($this, $cookie) = @_;
+  my ($this, $cookie) = @_;
 
-   my ($sum1, $sumx, $sumy, $sumxy, $sumx2, $sumy2) = @$cookie;
+  my ($sum1, $sumx, $sumy, $sumxy, $sumx2, $sumy2) = @$cookie;
 
-   return ($sumxy / $sum1) - ($sumx / $sum1) * ($sumy / $sum1);
+  return ($sumxy / $sum1) - ($sumx / $sum1) * ($sumy / $sum1);
 }
 
 sub long_usage
 {
-   while(my $line = <DATA>)
-   {
-      print $line;
-   }
-   exit 1;
+  return <<EOF;
+Usage: cov,<field1>,<field2>
+   Covariance of specified fields.
+EOF
 }
 
 sub short_usage
 {
-   return "find covariance of provided fields";
+  return "find covariance of provided fields";
 }
 
 App::RecordStream::Aggregator::register_aggregator('cov', __PACKAGE__);
@@ -47,9 +46,3 @@ App::RecordStream::DomainLanguage::Registry::register_vfn(__PACKAGE__, 'new_from
 App::RecordStream::DomainLanguage::Registry::register_vfn(__PACKAGE__, 'new_from_valuation', 'covariance', 'VALUATION', 'VALUATION');
 
 1;
-
-__DATA__
-Usage: cov,<field1>,<field2>
-   Covariance of specified fields.
-
-This is computed as Cov(X, Y) = E[(X - E[X]) * (Y - E[Y])].

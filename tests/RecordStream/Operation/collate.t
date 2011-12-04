@@ -14,15 +14,23 @@ my $stream = <<STREAM;
 {"value":"10.0.1.103","element":"address2", "foo": "bar", "bar": "baz"}
 STREAM
 
+my $stream2 = <<STREAM;
+{"value":"10.0.0.101","element":"address", "foo": "bar", "bar": "baz"}
+{"value":"10.0.1.101","element":"address", "bar": "baz2", "bar": "baz3"}
+{"value":"10.0.0.102","element":null, "foo": "bar3", "bar": null}
+{"value":"10.0.0.103","foo": "bar", "bar": "baz3"}
+{"value":"10.0.1.103","element":"address2", "foo": "bar", "bar": "baz"}
+STREAM
+
 my $solution = <<SOLUTION;
 {"count" : 5}
 SOLUTION
 
 App::RecordStream::Test::OperationHelper->do_match(
-   'collate',
-   [qw(--a count)],
-   $stream,
-   $solution,
+  'collate',
+  [qw(--a count)],
+  $stream,
+  $solution,
 );
 
 my $solution2 = <<SOLUTION;
@@ -31,10 +39,10 @@ my $solution2 = <<SOLUTION;
 SOLUTION
 
 App::RecordStream::Test::OperationHelper->do_match(
-   'collate',
-   [qw(--key element --a count)],
-   $stream,
-   $solution2,
+  'collate',
+  [qw(--key element --a count)],
+  $stream,
+  $solution2,
 );
 
 my $solution3 = <<SOLUTION;
@@ -50,18 +58,18 @@ my $solution3 = <<SOLUTION;
 SOLUTION
 
 App::RecordStream::Test::OperationHelper->do_match(
-   'collate',
-   ['--key', 'element,foo', qw(--cube --a count)],
-   $stream,
-   $solution3,
+  'collate',
+  ['--key', 'element,foo', qw(--cube --a count)],
+  $stream,
+  $solution3,
 );
 
 # Test KeySpecs
 App::RecordStream::Test::OperationHelper->do_match(
-   'collate',
-   ['--key', '!element|foo!s', qw(--cube --a count)],
-   $stream,
-   $solution3,
+  'collate',
+  ['--key', '!element|foo!s', qw(--cube --a count)],
+  $stream,
+  $solution3,
 );
 
 my $solution4 = <<SOLUTION;
@@ -72,8 +80,21 @@ my $solution4 = <<SOLUTION;
 SOLUTION
 
 App::RecordStream::Test::OperationHelper->do_match(
-   'collate',
-   ['--key', 'element', '--dlkey', 'foo=sub{shift->{foo}}', '--dlaggregator', 'sweet=uconcat(",", val(sub{$_[0]->{foo}.$_[0]->{bar};}))'],
-   $stream,
-   $solution4,
+  'collate',
+  ['--key', 'element', '--dlkey', 'foo=sub{shift->{foo}}', '--dlaggregator', 'sweet=uconcat(",", val(sub{$_[0]->{foo}.$_[0]->{bar};}))'],
+  $stream,
+  $solution4
+);
+
+my $solution5 = <<SOLUTION;
+{"count":2,"element":"address"}
+{"count":2,"element":""}
+{"count":1,"element":"address2"}
+SOLUTION
+
+App::RecordStream::Test::OperationHelper->do_match(
+  'collate',
+  ['--key', 'element', '--ignore-null', '--a', 'count'],
+  $stream2,
+  $solution5
 );

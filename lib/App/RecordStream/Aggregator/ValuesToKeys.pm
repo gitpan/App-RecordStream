@@ -3,7 +3,7 @@ package App::RecordStream::Aggregator::ValuesToKeys;
 our $VERSION = "3.4";
 
 use strict;
-use lib;
+use warnings;
 
 use App::RecordStream::Aggregator;
 use base qw(App::RecordStream::Aggregator::MapReduce::FieldSet);
@@ -13,23 +13,23 @@ use base qw(App::RecordStream::Aggregator::MapReduce::FieldSet);
 #sub new_from_valuation -- passed through
 
 sub map_fields {
-   my ($this, $key, $value) = @_;
-   return { $key => $value };
+  my ($this, $key, $value) = @_;
+  return { $key => $value };
 }
 
 sub reduce {
-   my ($this, $cookie1, $cookie2) = @_;
+  my ($this, $cookie1, $cookie2) = @_;
 
-   foreach my $key (keys %$cookie2 ) {
-      my $value = $cookie2->{$key};
-      $cookie1->{$key} = $value;
-   }
+  foreach my $key (keys %$cookie2 ) {
+    my $value = $cookie2->{$key};
+    $cookie1->{$key} = $value;
+  }
 
-   return $cookie1;
+  return $cookie1;
 }
 
 sub long_usage {
-   print <<USAGE;
+  return <<EOF;
 Usage: valuestokeys,<keyfield>,<valuefield>
   Take the specified keyfield, use its value as the key for the value of value
   field..  For instance:
@@ -41,16 +41,15 @@ Usage: valuestokeys,<keyfield>,<valuefield>
 
   with the aggregator 'vk,k,t'.  Repeated keyfield values will clobber earlier
   instances
-USAGE
-   exit 1;
+EOF
 }
 
 sub short_usage {
-   return "use one key-value as a key for a different value in the record";
+  return "use one key-value as a key for a different value in the record";
 }
 
 sub argct {
-   return 2;
+  return 2;
 }
 
 App::RecordStream::Aggregator::register_aggregator('valuestokeys', __PACKAGE__);

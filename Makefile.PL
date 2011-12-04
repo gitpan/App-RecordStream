@@ -9,14 +9,14 @@ my @scripts = BuildTools::get_bin_scripts();
 
 WriteMakefile(
    NAME          => 'App::RecordStream',
-   VERSION       => '3.5_01',
+   VERSION       => '3.6',
    EXE_FILES     => [ map { "bin/$_" } @scripts ],
    ABSTRACT_FROM => 'README.pod',
    AUTHOR        => 'Ben Bernard - perlhacker@benjaminbernard.com '
                     . 'Keith Amling - keith.amling@gmail.com',
    LICENSE       => 'MIT',
    dist          => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
-   clean         => { FILES => 'App-RecordStream-* doc/recs-* deb-dist testDb makedeb' },
+   clean         => { FILES => 'App-RecordStream-* deb-dist testDb makedeb' },
 
    PREREQ_PM     => {
      'Carp'                => 0,

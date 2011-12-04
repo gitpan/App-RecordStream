@@ -3,52 +3,40 @@ package App::RecordStream::Aggregator::FirstRecord;
 our $VERSION = "3.4";
 
 use strict;
-use lib;
+use warnings;
 
 use App::RecordStream::Aggregator::InjectInto;
 use App::RecordStream::DomainLanguage::Registry;
 
 use base qw(App::RecordStream::Aggregator::InjectInto);
 
-sub new
-{
-   my $class = shift;
-   my @args  = @_;
-
-   return $class->SUPER::new(@args);
-}
-
 sub combine
 {
-   my $this   = shift;
-   my $cookie = shift;
-   my $record  = shift;
+  my $this   = shift;
+  my $cookie = shift;
+  my $record  = shift;
 
-   return $record unless ( defined $cookie );
+  return $record unless ( defined $cookie );
 
-   return $cookie;
+  return $cookie;
 }
 
 sub short_usage
 {
-   return "first record";
+  return "first record";
 }
 
 sub long_usage
 {
-   print "Usage: first\n";
-   print "   Returns the first record.\n";
-   exit 1;
+  return <<EOF;
+Usage: first
+   Returns the first record.
+EOF
 }
 
 sub argct
 {
-   return 0;
-}
-
-sub returns_record
-{
-   return 1;
+  return 0;
 }
 
 App::RecordStream::Aggregator::register_aggregator('firstrecord', __PACKAGE__);

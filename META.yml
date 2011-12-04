@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               App-RecordStream
-version:            3.5_01
+version:            3.6
 abstract:           System for commandline analysis of data
 author:
     - Ben Bernard - perlhacker@benjaminbernard.com Keith Amling - keith.amling@gmail.com
@@ -35,7 +35,7 @@ no_index:
     directory:
         - t
         - inc
-generated_by:       ExtUtils::MakeMaker version 6.55_02
+generated_by:       ExtUtils::MakeMaker version 6.56
 meta-spec:
     url:      http://module-build.sourceforge.net/META-spec-v1.4.html
     version:  1.4

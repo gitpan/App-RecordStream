@@ -3,7 +3,7 @@ package App::RecordStream::Aggregator::Records;
 our $VERSION = "3.4";
 
 use strict;
-use lib;
+use warnings;
 
 use App::RecordStream::Aggregator::MapReduce;
 use App::RecordStream::Aggregator;
@@ -13,51 +13,47 @@ use base 'App::RecordStream::Aggregator::MapReduce';
 
 sub new
 {
-   my $class = shift;
+  my $class = shift;
 
-   my $this =
-   {
-   };
+  my $this =
+  {
+  };
 
-   bless $this, $class;
+  bless $this, $class;
 
-   return $this;
+  return $this;
 }
 
 sub map
 {
-   my ($this, $record) = @_;
+  my ($this, $record) = @_;
 
-   return [$record];
+  return [$record];
 }
 
 sub reduce
 {
-   my ($this, $cookie1, $cookie2) = @_;
+  my ($this, $cookie1, $cookie2) = @_;
 
-   return [@$cookie1, @$cookie2];
+  return [@$cookie1, @$cookie2];
 }
 
 sub argct
 {
-   return 0;
+  return 0;
 }
 
 sub short_usage
 {
-   return "returns an arrayref of all records";
+  return "returns an arrayref of all records";
 }
 
 sub long_usage
 {
-   print "Usage: records\n";
-   print "   An arrayref of all records.\n";
-   exit 1;
-}
-
-sub returns_record
-{
-   return 0;
+  return <<EOF;
+Usage: records
+   An arrayref of all records.
+EOF
 }
 
 App::RecordStream::Aggregator::register_aggregator('records', __PACKAGE__);

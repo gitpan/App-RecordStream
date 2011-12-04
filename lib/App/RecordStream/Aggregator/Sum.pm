@@ -3,7 +3,7 @@ package App::RecordStream::Aggregator::Sum;
 our $VERSION = "3.4";
 
 use strict;
-use lib;
+use warnings;
 
 use App::RecordStream::Aggregator::MapReduce::Field;
 use App::RecordStream::Aggregator;
@@ -17,21 +17,22 @@ use base 'App::RecordStream::Aggregator::MapReduce::Field';
 
 sub reduce
 {
-   my ($this, $cookie, $cookie2) = @_;
+  my ($this, $cookie, $cookie2) = @_;
 
-   return $cookie + $cookie2;
+  return $cookie + $cookie2;
 }
 
 sub long_usage
 {
-   print "Usage: sum,<field>\n";
-   print "   Sums specified field.\n";
-   exit 1;
+  return <<EOF;
+Usage: sum,<field>
+   Sums specified field.
+EOF
 }
 
 sub short_usage
 {
-   return "sums provided field";
+  return "sums provided field";
 }
 
 App::RecordStream::Aggregator::register_aggregator('sum', __PACKAGE__);

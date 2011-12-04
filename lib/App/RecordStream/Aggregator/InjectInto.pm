@@ -7,33 +7,33 @@ use App::RecordStream::Aggregator;
 use base qw(App::RecordStream::Aggregator::Aggregation);
 
 use strict;
-use lib;
+use warnings;
 
 sub new
 {
-   my $class = shift;
+  my $class = shift;
 
-   my $this = { };
-   bless $this, $class;
+  my $this = { };
+  bless $this, $class;
 
-   return $this;
+  return $this;
 }
 
 sub initial
 {
-   return undef;
+  return undef;
 }
 
 sub combine
 {
-   die "InjectInto subclass did not implement combine.\n";
+  die "InjectInto subclass did not implement combine.\n";
 }
 
 sub squish
 {
-   my ($this, $cookie) = @_;
+  my ($this, $cookie) = @_;
 
-   return $cookie;
+  return $cookie;
 }
 
 1;

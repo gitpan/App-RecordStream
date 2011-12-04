@@ -16,93 +16,108 @@ use App::RecordStream::Record;
 
 sub init
 {
-   my $this = shift;
-   my $args = shift;
+  my $this = shift;
+  my $args = shift;
 
-   my $follow = 1;
-   my $max    = undef;
+  my $follow = 1;
+  my $max    = undef;
 
-   my %options =
-   (
-      "follow!" => \$follow,
-      'max=s'   => \$max,
-   );
+  my %options =
+  (
+    "follow!" => \$follow,
+    'max=s'   => \$max,
+  );
 
-   $this->parse_options($args, \%options);
+  $this->parse_options($args, \%options);
 
-   $this->{'FOLLOW'} = $follow;
-   $this->{'MAX'}    = $max;
-   $this->{'URLS'}   = $this->_get_extra_args();
+  $this->{'FOLLOW'} = $follow;
+  $this->{'MAX'}    = $max;
+  $this->{'URLS'}   = $args;
 }
 
-sub run_operation
+sub wants_input
 {
-   my ($this) = @_;
+  return 0;
+}
 
-   my $ua = $this->make_user_agent();
+sub stream_done
+{
+  my ($this) = @_;
 
-   my $request = HTTP::Request->new();
-   $request->method('GET');
+  my $ua = $this->make_user_agent();
 
-   my @urls = @{$this->{'URLS'}};
+  my $request = HTTP::Request->new();
+  $request->method('GET');
 
-   my $count = 0;
-URL:
-   while (my $url = shift @urls)
-   {
-      $request->uri($url);
-      my $response = $ua->request($request);
+  my @urls = @{$this->{'URLS'}};
 
-      if (!$response->is_success)
+  my $count = 0;
+  URL:
+  while (my $url = shift @urls)
+  {
+    $this->update_current_filename($url);
+    $request->uri($url);
+    my $response = $ua->request($request);
+
+    if (!$response->is_success)
+    {
+      warn "# $0 GET $url failed: " . $response->message;
+      $this->_set_exit_value(1);
+      next;
+    }
+
+    my $xml = XMLin($response->content,
+      forcearray => [ 'entry', 'link' ],
+      keyattr => [ 'rel' ]);
+
+    foreach my $entry (@{$xml->{entry}})
+    {
+      $count++;
+      my $record = App::RecordStream::Record->new(%$entry);
+      $this->push_record($record);
+      if (defined $this->{'MAX'} && $count >= $this->{'MAX'})
       {
-         warn "# $0 GET $url failed: " . $response->message;
-         $this->_set_exit_value(1);
-         next;
+        last URL;
       }
+    }
 
-      my $xml = XMLin($response->content,
-                      forcearray => [ 'entry', 'link' ],
-                      keyattr => [ 'rel' ]);
-
-      foreach my $entry (@{$xml->{entry}})
-      {
-         $count++;
-         my $record = App::RecordStream::Record->new(%$entry);
-         $this->push_record($record);
-         if (defined $this->{'MAX'} && $count >= $this->{'MAX'})
-         {
-            last URL;
-         }
-      }
-
-      # Follow the feed 'next' link if present. It is a proposed part
-      # of the standard - see http://www.ietf.org/rfc/rfc5005.txt
-      if ($this->{'FOLLOW'} && exists $xml->{link}->{next})
-      {
-         unshift @urls, $xml->{link}->{next}->{href};
-      }
-   }
+    # Follow the feed 'next' link if present. It is a proposed part
+    # of the standard - see http://www.ietf.org/rfc/rfc5005.txt
+    if ($this->{'FOLLOW'} && exists $xml->{link}->{next})
+    {
+      unshift @urls, $xml->{link}->{next}->{href};
+    }
+  }
 }
 
 sub make_user_agent {
-    return LWP::UserAgent->new();
+  return LWP::UserAgent->new();
 }
 
 sub usage
 {
-   return <<USAGE;
+  my $this = shift;
+
+  my $options = [
+    [ '[no]follow', 'Follow atom feed next links (or not).  Defaults on.'],
+    [ 'max=<n>', 'Print at most <n> entries and then exit.'],
+  ];
+
+  my $args_string = $this->options_string($options);
+
+  return <<USAGE;
 Usage: recs-fromatomfeed <args> [<uris>]
+   __FORMAT_TEXT__
    Produce records from atom feed entries.
 
    Recs from atom feed will get entries from paginated atom feeds and create
    a record stream from the results. The keys of the record will be the fields
    in the atom field entry. Recs from atom feed will follow the 'next' link in
    a feed to retrieve all entries.
+   __FORMAT_TEXT__
 
-
-Help / Usage Options:
-   --[no]follow                   Follow atom feed next links (or not).  Defaults on.
-   --max=<n>                      Print at most <n> entries and then exit.
+Arguments:
+$args_string
 
 Examples:
    Dump an entire feed

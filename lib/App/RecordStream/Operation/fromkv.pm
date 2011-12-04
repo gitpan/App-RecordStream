@@ -10,81 +10,95 @@ use strict;
 use warnings;
 
 use Getopt::Long;
-use App::RecordStream::OutputStream;
 
 sub init {
-   my $this = shift;
-   my $args = shift;
+  my $this = shift;
+  my $args = shift;
 
-   my $kv_delim     = " ";
-   my $entry_delim  = "\n";
-   my $record_delim = "END\n";
+  my $kv_delim     = " ";
+  my $entry_delim  = "\n";
+  my $record_delim = "END\n";
 
-   my $spec = {
-      "kv-delim|f=s"     => \$kv_delim,
-      "entry-delim|e=s"  => \$entry_delim,
-      "record-delim|r=s" => \$record_delim,
-   };
+  my $spec = {
+    "kv-delim|f=s"     => \$kv_delim,
+    "entry-delim|e=s"  => \$entry_delim,
+    "record-delim|r=s" => \$record_delim,
+  };
 
-   $this->parse_options($args, $spec);
+  $this->parse_options($args, $spec);
 
-   $this->{'KV_DELIM'}     = $kv_delim;
-   $this->{'ENTRY_DELIM'}  = $entry_delim;
-   $this->{'RECORD_DELIM'} = $record_delim;
+  $this->{'KV_DELIM'}     = $kv_delim;
+  $this->{'ENTRY_DELIM'}  = $entry_delim;
+  $this->{'RECORD_DELIM'} = $record_delim;
 }
 
 
-sub run_operation {
-   my $this = shift;
+sub wants_input {
+  return 0;
+}
 
-   my $kv_delim     = $this->{'KV_DELIM'};
-   my $entry_delim  = $this->{'ENTRY_DELIM'};
-   my $record_delim = $this->{'RECORD_DELIM'};
+sub stream_done {
+  my $this = shift;
 
-   while (my $line = read_until($record_delim)) {
-      {
-         local $/ = $record_delim;
-         chomp $line;
+  my $kv_delim     = $this->{'KV_DELIM'};
+  my $entry_delim  = $this->{'ENTRY_DELIM'};
+  my $record_delim = $this->{'RECORD_DELIM'};
+
+  while (my $line = read_until($record_delim)) {
+    {
+      local $/ = $record_delim;
+      chomp $line;
+    }
+    $this->update_current_filename($ARGV);
+
+    # trim trailing and leading whitespace from record
+    $line =~ s/^\s+|\s+$//g;
+
+    my @entries = split(/\Q$entry_delim\E/, $line);
+
+    if (scalar(@entries) > 0) {
+      my $current_record = {};
+
+      for my $entry (@entries) {
+        my @pair = split($kv_delim, $entry);
+
+        $current_record->{$pair[0]} = $pair[1] if scalar(@pair) == 2;
       }
 
-      # trim trailing and leading whitespace from record
-      $line =~ s/^\s+|\s+$//g;
-
-      my @entries = split(/\Q$entry_delim\E/, $line);
-
-      if (scalar(@entries) > 0) {
-         my $current_record = {};
-
-         for my $entry (@entries) {
-            my @pair = split($kv_delim, $entry);
-
-            $current_record->{$pair[0]} = $pair[1] if scalar(@pair) == 2;
-         }
-
-         $this->push_record(App::RecordStream::Record->new($current_record));
-      }
-   }
+      $this->push_record(App::RecordStream::Record->new($current_record));
+    }
+  }
 }
 
 sub read_until {
-   my $delim = shift;
-   local $/ = $delim;
+  my $delim = shift;
+  local $/ = $delim;
 
-   return <>;
+  return <>;
 }
 
 sub usage
 {
-   return <<USAGE;
+  my $this = shift;
+
+  my $options = [
+    [ 'record-delim|r <delim>', 'Delimiter to for separating records (defaults to "END\\n").'],
+    [ 'entry-delim|e  <delim>', 'Delimiter to for separating entries within records (defaults to "\\n").'],
+    [ 'kv-delim|f <delim>', 'Delimiter to for separating key/value pairs within an entry (defaults to " ").'],
+  ];
+
+  my $args_string = $this->options_string($options);
+
+  return <<USAGE;
 Usage : recs-fromkv <args> [<files>]
-  Records are generated from charactr input with the form "<record><record-delim><record>...".
-  Records have the form "<entry><entry-delim><entry>...".  Entries are pairs of the form
-  "<key><kv-delim><value>".
+   __FORMAT_TEXT__
+   Records are generated from charactr input with the form "<record><record-delim><record>...".
+   Records have the form "<entry><entry-delim><entry>...".  Entries are pairs of the form
+   "<key><kv-delim><value>".
+   __FORMAT_TEXT__
 
 Arguments:
-  --record-delim|r <delim>   Delimiter to for separating records (defaults to "END\\n").
-  --entry-delim|e  <delim>   Delimiter to for separating entries within records (defaults to "\\n").
-  --kv-delim|f   <delim>     Delimiter to for separating key/value pairs within an entry (defaults to " ").
+$args_string
 
 Examples:
   Parse memcached stat metrics into records

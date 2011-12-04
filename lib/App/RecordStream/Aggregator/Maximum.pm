@@ -3,7 +3,7 @@ package App::RecordStream::Aggregator::Maximum;
 our $VERSION = "3.4";
 
 use strict;
-use lib;
+use warnings;
 
 use App::RecordStream::Aggregator::InjectInto::Field;
 use App::RecordStream::DomainLanguage::Registry;
@@ -16,30 +16,31 @@ use base qw(App::RecordStream::Aggregator::InjectInto::Field);
 
 sub combine_field
 {
-   my $this   = shift;
-   my $cookie = shift;
-   my $value  = shift;
+  my $this   = shift;
+  my $cookie = shift;
+  my $value  = shift;
 
-   return $value unless ( defined $cookie );
+  return $value unless ( defined $cookie );
 
-   if ( $cookie < $value )
-   {
-      return $value;
-   }
+  if ( $cookie < $value )
+  {
+    return $value;
+  }
 
-   return $cookie;
+  return $cookie;
 }
 
 sub short_usage
 {
-   return "maximum value for a field";
+  return "maximum value for a field";
 }
 
 sub long_usage
 {
-   print "Usage: max,<field>\n";
-   print "   Maximum value of specified field.\n";
-   exit 1;
+  return <<EOF;
+Usage: max,<field>
+   Maximum value of specified field.
+EOF
 }
 
 App::RecordStream::Aggregator::register_aggregator('maximum', __PACKAGE__);

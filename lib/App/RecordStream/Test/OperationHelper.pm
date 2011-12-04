@@ -10,156 +10,217 @@ use App::RecordStream::InputStream;
 use App::RecordStream::OutputStream;
 
 sub new {
-   my $class = shift;
-   my %args  = @_;
+  my $class = shift;
+  my %args  = @_;
 
-   my $this = {
-      INPUT     => create_stream($args{'input'}),
-      OUTPUT    => create_stream($args{'output'}),
-      OPERATION => $args{'operation'},
-   };
+  my $this = {
+    INPUT     => create_stream($args{'input'}),
+    OUTPUT    => create_stream($args{'output'}),
+    OPERATION => $args{'operation'},
+    KEEPER    => $args{'keeper'},
+  };
 
-   bless $this, $class;
+  bless $this, $class;
 
-   return $this;
+  return $this;
 }
 
 sub create_stream {
-   my $input = shift;
+  my $input = shift;
 
-   return undef unless ( $input );
+  return undef unless ( $input );
+  return $input if ( ref($input) eq 'ARRAY' );
 
-   if ( UNIVERSAL::isa($input, 'App::RecordStream::InputStream') ) {
-      return $input;
-   }
+  if ( UNIVERSAL::isa($input, 'App::RecordStream::InputStream') ) {
+    return $input;
+  }
 
-   if ( (not ($input =~ m/\n/m))  && -e $input ) {
-      return App::RecordStream::InputStream->new(FILE => $input);
-   }
+  if ( (not ($input =~ m/\n/m))  && -e $input ) {
+    return App::RecordStream::InputStream->new(FILE => $input);
+  }
 
-   return App::RecordStream::InputStream->new(STRING => $input);
+  return App::RecordStream::InputStream->new(STRING => $input);
 }
 
 sub matches {
-   my $this = shift;
-   my $name = shift || 'unnamed';
+  my $this = shift;
+  my $name = shift || 'unnamed';
 
-   my $op     = $this->{'OPERATION'};
-   my $input  = $this->{'INPUT'};
-   my $keeper = Keeper->new();
+  my $op     = $this->{'OPERATION'};
+  my $input  = $this->{'INPUT'};
 
-   $op->set_input_stream($input);
-   $op->_set_next_operation($keeper);
-   $op->run_operation();
-   $op->finish();
-
-   my $output  = $this->{'OUTPUT'};
-   my $results = $keeper->get_records();
-   my $i = 0;
-
-   #ok(0, "DIE");
-   my @output_records;
-   if ( $output ) {
-      while ( my $record = $output->get_record() ) {
-         push @output_records, $record;
+  if ( $op->wants_input() && $input ) {
+    if ( ref($input) eq 'ARRAY' ) {
+      my ($t, @v) = @$input;
+      if ( $t eq 'LINES' ) {
+        for my $l (@v) {
+          if ( ! $op->accept_line($l) ) {
+            last;
+          }
+        }
       }
-   }
+      elsif ( $t eq 'FILES' ) {
+        local @ARGV = @v;
+        while(my $l = <>) {
+          App::RecordStream::Operation::set_current_filename($ARGV);
+          chomp $l;
+          if ( ! $op->accept_line($l) ) {
+            last;
+          }
+        }
+      }
+      else {
+        die;
+      }
+    }
+    else {
+      App::RecordStream::Operation::set_current_filename($input->get_filename());
+      while ( my $r = $input->get_record() ) {
+        if ( ! $op->accept_record($r) ) {
+          last;
+        }
+      }
+    }
+  }
+  $op->finish();
 
-   my $is_ok = 1;
-   for my $record (@$results) {
-      $is_ok = 0 if ( ! ok(UNIVERSAL::isa($record, 'App::RecordStream::Record'), "Record is a App::RecordStream::Record") );
-   }
+  my $output  = $this->{'OUTPUT'};
+  my $results = $this->{'KEEPER'}->get_records();
+  my $i = 0;
 
-   $is_ok = 0 if ( ! is_deeply($results, \@output_records, "Records match: $name") );
+  #ok(0, "DIE");
+  my @output_records;
+  if ( $output ) {
+    while ( my $record = $output->get_record() ) {
+      push @output_records, $record;
+    }
+  }
 
-   $is_ok = 0 if ( ! ok($keeper->has_called_finish(), "Has called finish: $name") );
+  my $is_ok = 1;
+  for my $record (@$results) {
+    $is_ok = 0 if ( ! ok(UNIVERSAL::isa($record, 'App::RecordStream::Record'), "Record is a App::RecordStream::Record") );
+  }
 
-   if ( ! $is_ok ) {
-      my $out = App::RecordStream::OutputStream->new(\*STDERR);
-      warn "Expected and output differed!\nExpected:\n";
-      $out->put_record($_) for @output_records;
-      warn "Output from module:\n";
-      $out->put_record($_) for @$results;
-   }
+  $is_ok = 0 if ( ! is_deeply($results, \@output_records, "Records match: $name") );
 
-   return $is_ok;
+  $is_ok = 0 if ( ! ok($this->{'KEEPER'}->has_called_finish(), "Has called finish: $name") );
+
+  if ( ! $is_ok ) {
+    warn "Expected and output differed!\nExpected:\n";
+    for my $record (@output_records) {
+      print STDERR App::RecordStream::OutputStream::hashref_string($record) . "\n";
+    }
+    warn "Output from module:\n";
+    for my $record (@$results) {
+      print STDERR App::RecordStream::OutputStream::hashref_string($record) . "\n";
+    }
+  }
+
+  return $is_ok;
 }
 
 sub do_match {
-   my $class          = shift;
-   my $operation_name = shift;
-   my $args           = shift;
-   my $input          = shift;
-   my $output         = shift;
+  my $class          = shift;
+  my $operation_name = shift;
+  my $args           = shift;
+  my $input          = shift;
+  my $output         = shift;
 
-   my $operation_class = "App::RecordStream::Operation::$operation_name";
-   my $op = $operation_class->new($args);
+  my $operation_class = "App::RecordStream::Operation::$operation_name";
+  my $keeper = App::RecordStream::Test::OperationHelper::Keeper->new();
+  my $op = $operation_class->new($args, $keeper);
 
-   ok($op, "Operation initialization");
+  if ( $op->wants_input() && @$args ) {
+    if ( $input ) {
+      fail("Both extra args [" . join(", ", @$args) . "] and input provided?");
+    }
+    else {
+      $input = ['FILES', @$args];
+    }
+  }
 
-   my $helper = $class->new(
-      operation => $op,
-      input     => $input,
-      output    => $output,
-   );
+  ok($op, "Operation initialization");
 
-   $helper->matches();
+  my $helper = $class->new(
+    operation => $op,
+    keeper    => $keeper,
+    input     => $input,
+    output    => $output,
+  );
 
-   return $helper;
+  $helper->matches();
+
+  return $helper;
 }
 
 sub test_output {
-   my $class          = shift;
-   my $operation_name = shift;
-   my $args           = shift;
-   my $input          = shift;
-   my $output         = shift;
+  my $class          = shift;
+  my $operation_name = shift;
+  my $args           = shift;
+  my $input          = shift;
+  my $output         = shift;
 
-   my $operation_class = "App::RecordStream::Operation::$operation_name";
-   my $op = $operation_class->new($args);
+  my $operation_class = "App::RecordStream::Operation::$operation_name";
+  my $keeper = App::RecordStream::Test::OperationHelper::Keeper->new();
+  my $op = $operation_class->new($args, $keeper);
 
-   ok($op, "Object initialization");
+  ok($op, "Object initialization");
 
-   my @collected_output;
-   $op->set_printer(sub { push @collected_output, shift() });
+  my $helper = __PACKAGE__->new(
+    operation => $op,
+    keeper    => $keeper,
+    input     => $input,
+    output    => '',
+  );
 
-   my $helper = __PACKAGE__->new(
-      operation => $op,
-      input     => $input,
-      output    => '',
-   );
+  $helper->matches();
 
-   $helper->matches();
-
-   is(join ('', @collected_output), $output, "Output matches expected");
+  is(join ('', map { "$_\n" } @{$keeper->get_lines()}), $output, "Output matches expected");
 }
 
 
-package Keeper;
+package App::RecordStream::Test::OperationHelper::Keeper;
 
-use base qw(App::RecordStream::Operation);
+use base qw(App::RecordStream::Stream::Base);
 
 sub new {
-   my $class = shift;
-   my $this = { RECORDS => [] };
-   bless $this, $class;
-   return $this;
+  my $class = shift;
+  my $this = { RECORDS => [], LINES => [] };
+  bless $this, $class;
+  return $this;
 }
 
 sub accept_record {
-   my $this = shift;
-   my $record = shift;
-   push @{$this->{'RECORDS'}}, $record;
+  my $this = shift;
+  my $record = shift;
+
+  push @{$this->{'RECORDS'}}, $record;
+
+  return 1;
 }
 
 sub get_records {
-   my $this = shift;
-   return $this->{'RECORDS'};
+  my $this = shift;
+  return $this->{'RECORDS'};
+}
+
+sub accept_line {
+  my $this = shift;
+  my $line = shift;
+
+  push @{$this->{'LINES'}}, $line;
+
+  return 1;
+}
+
+sub get_lines {
+  my $this = shift;
+  return $this->{'LINES'};
 }
 
 sub has_called_finish {
-   my $this = shift;
-   return $this->{'CALLED_FINISH'};
+  my $this = shift;
+  return $this->{'CALLED_FINISH'};
 }
 
 sub finish {

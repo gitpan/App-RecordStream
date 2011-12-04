@@ -3,7 +3,7 @@ package App::RecordStream::Aggregator::Average;
 our $VERSION = "3.4";
 
 use strict;
-use lib;
+use warnings;
 
 use App::RecordStream::Aggregator::Ord2Univariate;
 use App::RecordStream::Aggregator;
@@ -17,23 +17,24 @@ use base 'App::RecordStream::Aggregator::Ord2Univariate';
 
 sub squish
 {
-   my ($this, $cookie) = @_;
+  my ($this, $cookie) = @_;
 
-   my ($sum1, $sumx, $sumx2) = @$cookie;
+  my ($sum1, $sumx, $sumx2) = @$cookie;
 
-   return $sumx / $sum1;
+  return $sumx / $sum1;
 }
 
 sub long_usage
 {
-   print "Usage: avg,<field>\n";
-   print "   Average of specified field.\n";
-   exit 1;
+  return <<EOF;
+Usage: avg,<field>
+   Average of specified field.
+EOF
 }
 
 sub short_usage
 {
-   return "averages provided field";
+  return "averages provided field";
 }
 
 App::RecordStream::Aggregator::register_aggregator('average', __PACKAGE__);

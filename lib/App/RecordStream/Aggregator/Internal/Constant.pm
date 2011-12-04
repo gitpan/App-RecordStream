@@ -1,41 +1,41 @@
 package App::RecordStream::Aggregator::Internal::Constant;
 
 use strict;
-use lib;
+use warnings;
 
 use App::RecordStream::Aggregator::Aggregation;
 use base 'App::RecordStream::Aggregator::Aggregation';
 
 sub new
 {
-    my $class = shift;
-    my $value = shift;
+  my $class = shift;
+  my $value = shift;
 
-    my $this =
-    {
-        'VALUE' => $value,
-    };
+  my $this =
+  {
+    'VALUE' => $value,
+  };
 
-    bless $this, $class;
+  bless $this, $class;
 
-    return $this;
+  return $this;
 }
 
 sub initial
 {
-    return undef;
+  return undef;
 }
 
 sub combine
 {
-    return undef;
+  return undef;
 }
 
 sub squish
 {
-    my $this = shift;
+  my $this = shift;
 
-    return $this->{'VALUE'};
+  return $this->{'VALUE'};
 }
 
 1;
