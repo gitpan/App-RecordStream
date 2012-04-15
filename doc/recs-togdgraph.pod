@@ -1,22 +1,24 @@
 =head1 NAME
 
-recs-topn
+recs-togdgraph
 
-=head1 recs-topn --help-all
+=head1 recs-togdgraph --help-all
 
  Help from: --help-basic:
- Usage: recs-topn <args> [<files>]
-    Outputs the top n records from input stream or from <files>. You may segment the input stream based on a list of keys such that
-    unique values of keys are treated as distinct input streams. This enables top n listings per value groupings. The key values
-    need not be contiguous in the input record stream.
+ Usage: recs-togdgraph <args> [<files>]
+   Create a bar, scatter, or line graph using GD::Graph.
  
-    --key <keyspec>              Comma separated list of fields. May be specified multiple times. May be a keyspec or keygroup, see
-                                 '--help-keys' for more
-    --topn | -n <number>         Number of records to output. Default is 10.
-    --delimiter <string>         String used internally to delimit values when performing a topn on a keyspec that inlcudeds
-                                 multiple keys. This value defaults to "9t%7Oz%]" which may - under unusual and bizarre corner
-                                 cases - cause false positive key matches if your values contain this value. You can set this to
-                                 any string.
+ Args:
+    --key|-k|--key <keyspec>     Specify keys that correlate to keys in JSON data
+    --option|-o option=val       Specify custom command for GD::Graph
+    --label-x <val>              Specify X-axis label
+    --label-y <val>              Specify Y-axis label
+    --width <val>                Specify width
+    --height <val>               Specify height
+    --graph-title <val>          Specify graph title
+    --type <val>                 Specify different graph type other than scatter (supported: line, bar)
+    --png-file <val>             Specify output PNG filename
+    --dump-use-spec <val>        Dump GD usage (used mainly for testing)
     --filename-key|fk <keyspec>  Add a key with the source filename (if no filename is applicable will put NONE)
  
    Help Options:
@@ -27,15 +29,18 @@ recs-topn
        --help-keyspecs   Help on keyspecs, a way to index deeply and with regexes
  
  Examples:
-    Output just the top 5 records
-       cat records | recs-topn -n=5
-     (this is equivalent to executing "cat records | recs-grep '$line < 5'")
+   for a plain point graph:
  
-    Output just 10 records for each area
-       cat records | recs-sort --key area | recs-topn -n=10 --key area
+   recs-togdgraph --keys uid,ct --png-file login-graph.png --graph-title '# of logins' --label-x user --label-y logins
  
-    Output the top 10 longest running queries per area and priority level
-       cat records | recs-sort --key area,priority,runtime=-n  | recs-topn -n=10 --key area,priority
+   togdgraph also accepts any GD::Graph options with the --option command...
+   for a pink background with yellow label text if that really is your thing:
+ 
+   recs-togdgraph --keys uid,ct --option boxclr=pink --label-y 'logins' --label-x 'user' --option labelclr=yellow
+ 
+   however, for a different graph type such as line or bar, specify with --type:
+ 
+   recs-togdgraph --keys uid,ct --type line
  
  Help from: --help-keygroups:
  KEY GROUPS
