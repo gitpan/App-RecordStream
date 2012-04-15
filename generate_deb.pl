@@ -54,7 +54,7 @@ if ($?) {
   die "failed running dh-make-perl!";
 }
 
-run_command('sed -e \'s/perl\///g\' -i debian/control');
+run_command('sed -e \'s/perl\///g; s/Tie::ExtraHash//g;\' -i debian/control');
 run_command('debuild -i -us -uc -A -b');
 
 if ($?) {

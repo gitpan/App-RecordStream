@@ -1,3 +1,8 @@
+Best way to get recent code is use apt-get with git clone from github. (Manual Install below)
+
+1. sudo apt-get install libdbd-sqlite3-perl sqlite3 libxml-simple-perl libproc-processtable-perl libdate-manip-perl libtext-csv-perl gnuplot libnetpacket-perl libnet-pcap-perl libnet-dns-perl libjson-perl libtext-autoformat-perl
+2. git clone from github
+
 ================================================================================
 ==================  Easiest Install - PPA ======================================
 ================================================================================
@@ -46,7 +51,7 @@ directory.  A humorus introduction to a simple use of RecordStream.
 ================================================================================
 
 % sudo perl -MCPAN -e shell
-> install App::RecordStream
+> install App::RecordStream::Operation
 
 Then answer all the many many prompts.
 
@@ -67,7 +72,7 @@ First download all the source (available from http://github.com/benbernard/Recor
 
 Then you'll need some packages:
 
-Ubuntu packages: 
+Ubuntu packages:
   libdbd-sqlite3-perl
   sqlite3
   libxml-simple-perl
@@ -79,10 +84,11 @@ Ubuntu packages:
   libnet-pcap-perl
   libnet-dns-perl
   libjson-perl
+  libtext-autoformat-perl
 
 you can install these with:
 
-% sudo apt-get install libdbd-sqlite3-perl sqlite3 libxml-simple-perl libproc-processtable-perl libdate-manip-perl libtext-csv-perl gnuplot libnetpacket-perl libnet-pcap-perl libnet-dns-perl libjson-perl
+% sudo apt-get install libdbd-sqlite3-perl sqlite3 libxml-simple-perl libproc-processtable-perl libdate-manip-perl libtext-csv-perl gnuplot libnetpacket-perl libnet-pcap-perl libnet-dns-perl libjson-perl libtext-autoformat-perl
 
 ----
 

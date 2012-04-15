@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               App-RecordStream
-version:            3.7_01
+version:            3.7.1
 abstract:           System for commandline analysis of data
 author:
     - Ben Bernard - perlhacker@benjaminbernard.com Keith Amling - keith.amling@gmail.com
@@ -11,26 +11,26 @@ configure_requires:
 build_requires:
     ExtUtils::MakeMaker:  0
 requires:
-    Carp:                 0
-    Date::Manip:          0
-    DBD::SQLite:          0
-    DBI:                  0
-    File::Temp:           0
-    FindBin:              0
-    Getopt::Long:         0
-    HTTP::Request:        0
-    IO::String:           0
-    JSON:                 0
-    JSON::XS:             0
-    LWP:                  0
-    Net::DNS::Packet:     0
-    Net::Pcap:            0
-    NetPacket::Ethernet:  0
-    Proc::ProcessTable:   0
-    Test::More:           0
-    Text::CSV:            0
-    Tie::IxHash:          0
-    XML::Simple:          0
+    Carp:              0
+    Data::Dumper:      0
+    Date::Manip:       0
+    DBI:               0
+    File::Temp:        0
+    FindBin:           0
+    Getopt::Long:      0
+    HTTP::Request:     0
+    IO::String:        0
+    JSON:              0
+    LWP::UserAgent:    0
+    Scalar::Util:      0
+    Term::ReadKey:     0
+    Test::More:        0
+    Text::Autoformat:  0
+    Text::CSV:         0
+    Tie::Array:        0
+    Tie::Hash:         0
+    Tie::IxHash:       0
+    XML::Simple:       0
 no_index:
     directory:
         - t
