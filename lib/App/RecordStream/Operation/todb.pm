@@ -1,6 +1,6 @@
 package App::RecordStream::Operation::todb;
 
-our $VERSION = "3.4";
+our $VERSION = "3.7.4";
 
 use strict;
 use warnings;
@@ -32,8 +32,7 @@ sub init {
     'key|k|fields|f=s' => sub { shift; add_field($fields, shift) },
   };
 
-  Getopt::Long::Configure("pass_through");
-  $this->parse_options($args, $spec);
+  $this->parse_options($args, $spec, ['pass_through']);
 
   $table_name = 'recs' unless $table_name;
 

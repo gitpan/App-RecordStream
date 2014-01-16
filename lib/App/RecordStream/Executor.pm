@@ -3,7 +3,7 @@
 
 package App::RecordStream::Executor;
 
-our $VERSION = "3.4";
+our $VERSION = "3.7.4";
 
 use strict;
 use warnings;
@@ -298,6 +298,8 @@ sub options_help {
   return (
     ['e', 'a perl snippet to execute, optional'],
     ['E', 'the name of a file to read as a perl snippet'],
+    ['M module[=...]', 'execute "use module..." before executing snippet; same behaviour as perl -M'],
+    ['m module[=...]', 'same as -M, but by default import nothing'],
   );
 }
 

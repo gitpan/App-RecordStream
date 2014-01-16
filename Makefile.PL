@@ -9,7 +9,7 @@ my @scripts = BuildTools::get_bin_scripts();
 
 WriteMakefile(
    NAME          => 'App::RecordStream',
-   VERSION       => '3.7.3',
+   VERSION       => '3.7.4',
    EXE_FILES     => [ map { "bin/$_" } @scripts ],
    ABSTRACT_FROM => 'README.pod',
    AUTHOR        => 'Ben Bernard - perlhacker@benjaminbernard.com '
@@ -20,6 +20,7 @@ WriteMakefile(
 
    PREREQ_PM     => {
      'Carp'             => 0,
+     'DBD::SQLite'      => 0,
      'DBI'              => 0,
      'Data::Dumper'     => 0,
      'Date::Manip'      => 0,
@@ -29,16 +30,19 @@ WriteMakefile(
      'HTTP::Request'    => 0,
      'IO::String'       => 0,
      'JSON'             => 0,
+     'JSON::XS'         => 0,
+     'List::MoreUtils'  => 0,
      'LWP::UserAgent'   => 0,
      'Scalar::Util'     => 0,
      'Term::ReadKey'    => 0,
      'Test::More'       => 0,
      'Text::Autoformat' => 0,
      'Text::CSV'        => 0,
+     'Text::CSV_XS'     => 0.99,
      'Tie::Array'       => 0,
      'Tie::Hash'        => 0,
      'Tie::IxHash'      => 0,
-     'XML::Simple'      => 0,
+     'XML::Twig'        => 0,
    },
 
    # Optional dependencies
@@ -47,6 +51,8 @@ WriteMakefile(
    #   'NetPacket::Ethernet' => 0,
    #   'GD::Graph'           => 0,
    #   'Proc::ProcessTable'  => 0;
+   #   'MongoDB'          => 0,
+   #   'JSON::PP'         => 0;
    # Not really optional, but in the base perl, including it confuses debian
    # package creator
    #   'Tie::ExtraHash'   => 0,
@@ -70,7 +76,7 @@ WriteMakefile(
       './generate_pods.pl' => 'generate_pods',
    },
 
-   PM => { 
+   PM => {
       (map {( "lib/$_" => "\$(INST_LIB)/$_" )} BuildTools::get_pms()),
    },
 );

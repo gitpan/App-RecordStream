@@ -1,6 +1,6 @@
 package App::RecordStream::Operation::annotate;
 
-our $VERSION = "3.4";
+our $VERSION = "3.7.4";
 
 use strict;
 
@@ -22,7 +22,7 @@ sub init {
     'keys|k=s' => sub { $key_groups->add_groups($_[1]); },
   };
 
-  $this->parse_options($args, $spec);
+  $this->parse_options($args, $spec, ['bundling']);
 
   my $expression = $executor_options->get_string($args);
   my $executor = App::RecordStream::Executor->new($expression . ';$r');
@@ -99,6 +99,7 @@ sub usage {
   my $this = shift;
 
   my $options = [
+    App::RecordStream::Executor::options_help(),
     ['keys', 'Keys to match records by, maybe specified multiple times, may be a keygroup or keyspec'],
   ];
 

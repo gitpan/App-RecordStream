@@ -1,6 +1,6 @@
 package App::RecordStream::Operation::fromdb;
 
-our $VERSION = "3.4";
+our $VERSION = "3.7.4";
 
 use strict;
 use warnings;
@@ -22,8 +22,7 @@ sub init {
     'sql=s'   => \$sql,
   };
 
-  Getopt::Long::Configure("pass_through");
-  $this->parse_options($args, $spec);
+  $this->parse_options($args, $spec, ['pass_through']);
 
   $this->{'TABLE_NAME'} = $table_name;
 

@@ -4,35 +4,38 @@ recs-fromdb
 
 =head1 recs-fromdb --help-all
 
-    Recs from DB will execute a select statement on a database of your choice, and create a record stream from the results. The keys
-    of the record will be the column names and the values the row values.
+    Recs from DB will execute a select statement on a database of your choice,
+    and create a record stream from the results. The keys of the record will be
+    the column names and the values the row values.
  
-    --table                      Name of the table to dump, this is a shortcut for --sql 'SELECT * from tableName'
+    --table                      Name of the table to dump, this is a shortcut
+                                 for --sql 'SELECT * from tableName'
     --sql                        SQL select statement to run
-    --filename-key|fk <keyspec>  Add a key with the source filename (if no filename is applicable will put NONE)
+    --filename-key|fk <keyspec>  Add a key with the source filename (if no
+                                 filename is applicable will put NONE)
  
    Help Options:
        --help  This help screen
  
  Database Options
     password  - Password to connect as
-    user  - User to connect as
     type  - Type of database to connect to - Default: sqlite
+    user  - User to connect as
  
  Datbase types:
     mysql - Connect to a remote mysql database
-    sqlite - A simple local file based db
     oracle - Connect to a remote Oracle database
+    sqlite - A simple local file based db
  
  Database Options for type: mysql
     dbname  - Database to connect to
     host  - Mysql Host
  
- Database Options for type: sqlite
-    dbfile  - Local file for database - Default: testDb
- 
  Database Options for type: oracle
     db  - Database name (tnsname) to connect to
+ 
+ Database Options for type: sqlite
+    dbfile  - Local file for database - Default: testDb
  
  Examples:
     # Dump a table

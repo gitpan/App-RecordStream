@@ -1,6 +1,6 @@
 package App::RecordStream::DBHandle;
 
-our $VERSION = "3.4";
+our $VERSION = "3.7.4";
 
 use strict;
 use warnings;
@@ -59,8 +59,11 @@ sub parse_options {
   my $spec = get_option_spec($mode, $options);
   local @ARGV = @$args;
 
+  my $saved_settings = Getopt::Long::Configure();
   Getopt::Long::Configure("pass_through");
   GetOptions( %$spec );
+  Getopt::Long::Configure($saved_settings);
+
   set_defaults($mode, $options);
 
   @$args = @ARGV;
@@ -160,14 +163,14 @@ sub usage {
 
   $usage .= "Datbase types:\n";
 
-  foreach my $type ( keys %$DESCRIPTIONS ) {
+  foreach my $type ( sort keys %$DESCRIPTIONS ) {
     my $description = $DESCRIPTIONS->{$type};
     $usage .=  "   $type - $description\n";
   }
 
   $usage .=  "\n";
 
-  foreach my $type ( keys %$MODES ) {
+  foreach my $type ( sort keys %$MODES ) {
     next if ( $type eq 'main' );
     $usage .=  "Database Options for type: $type\n";
     $usage .= type_usage($type);
@@ -186,7 +189,7 @@ sub type_usage {
 
   my $options = $MODES->{$type};
 
-  foreach my $name ( keys %$options ) {
+  foreach my $name ( sort keys %$options ) {
     my $description = @{$options->{$name}}[2];
     my $default     = @{$options->{$name}}[1];
 

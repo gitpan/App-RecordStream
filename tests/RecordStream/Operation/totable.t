@@ -30,7 +30,7 @@ App::RecordStream::Test::OperationHelper->test_output(
 
 App::RecordStream::Test::OperationHelper->test_output(
   'totable',
-  ['--key', '!oo!'],
+  ['--key', '!oo!sort'],
   $stream,
   $solution,
 );
@@ -62,7 +62,7 @@ SOLUTION
 
 App::RecordStream::Test::OperationHelper->test_output(
   'totable',
-  [qw(--k !foo!)],
+  [qw(--k !foo!sort)],
   $stream,
   $solution3,
 );
@@ -97,5 +97,23 @@ App::RecordStream::Test::OperationHelper->test_output(
   [qw(--spreadsheet --delim t)],
   $stream,
   $solution5,
+);
+
+my $solution6 = <<SOLUTION;
+zoo    foo
+----   ---
+biz1   1  
+biz2   2  
+biz3   3  
+biz4   4  
+biz5   5  
+SOLUTION
+
+# Test ordering of table output
+App::RecordStream::Test::OperationHelper->test_output(
+  'totable',
+  ['--key', 'zoo,foo'],
+  $stream,
+  $solution6,
 );
 

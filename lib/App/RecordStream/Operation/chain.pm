@@ -1,6 +1,6 @@
 package App::RecordStream::Operation::chain;
 
-our $VERSION = "3.4";
+our $VERSION = "3.7.4";
 
 use strict;
 use warnings;
@@ -20,8 +20,7 @@ sub init {
     'n'          => sub { $show_chain = 1; $dry_run = 1; },
   };
 
-  Getopt::Long::Configure("require_order");
-  $this->parse_options($args, $spec);
+  $this->parse_options($args, $spec, ['require_order']);
 
   return unless (@$args);
 

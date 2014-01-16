@@ -1,6 +1,6 @@
 package App::RecordStream::Operation::eval;
 
-our $VERSION = "3.4";
+our $VERSION = "3.7.4";
 
 use strict;
 use warnings;
@@ -23,7 +23,7 @@ sub init {
     $executor_options->arguments(),
   };
 
-  $this->parse_options($args, $spec);
+  $this->parse_options($args, $spec, ['bundling']);
 
   my $expression = $executor_options->get_string($args);
   my $executor = App::RecordStream::Executor->new($expression);
@@ -56,6 +56,7 @@ sub usage {
   my $this = shift;
 
   my $options = [
+    App::RecordStream::Executor::options_help(),
     ['chomp', 'Chomp eval results (to avoid duplicate newlines when already newline-terminated)'],
   ];
 

@@ -1,6 +1,6 @@
 package App::RecordStream::Operation::tocsv;
 
-our $VERSION = "3.4";
+our $VERSION = "3.7.4";
 
 use strict;
 
@@ -41,7 +41,7 @@ sub accept_record {
       $this->{'KEYS'} = $this->{'KEY_GROUPS'}->get_keyspecs($record);
     }
     else {
-      $this->{'KEYS'} = [keys %$record];
+      $this->{'KEYS'} = [sort keys %$record];
     }
 
     if ( $this->{'HEADERS'} ) {

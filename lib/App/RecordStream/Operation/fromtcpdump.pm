@@ -1,6 +1,6 @@
 package App::RecordStream::Operation::fromtcpdump;
 
-our $VERSION = "3.4";
+our $VERSION = "3.7.4";
 
 use strict;
 use warnings;
@@ -240,9 +240,9 @@ sub usage {
 
   my $args_string = $this->options_string($options);
 
-  my $ip_flag_names  = join(', ', keys %$IP_FLAGS);
-  my $tcp_flag_names = join(', ', keys %$TCP_FLAGS);
-  my $arp_opcodes    = join(', ', values %$ARP_OPCODES);
+  my $ip_flag_names  = join(', ', sort keys %$IP_FLAGS);
+  my $tcp_flag_names = join(', ', sort keys %$TCP_FLAGS);
+  my $arp_opcodes    = join(', ', sort values %$ARP_OPCODES);
 
   return <<USAGE;
 Usage: recs-fromtcpdump <file1> <file2> ...

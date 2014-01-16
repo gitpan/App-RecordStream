@@ -1,6 +1,6 @@
 package App::RecordStream::Operation::tohtml;
 
-our $VERSION = "3.4";
+our $VERSION = "3.7.4";
 
 use strict;
 use warnings;
@@ -69,7 +69,7 @@ sub print_start {
     $this->{'FIELDS'} = $specs;
   }
   else {
-    $this->{'FIELDS'} = [keys %$record];
+    $this->{'FIELDS'} = [sort keys %$record];
   }
 
   return if ( $this->{'NO_HEADER'} );

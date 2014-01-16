@@ -1,6 +1,6 @@
 package App::RecordStream::Operation::grep;
 
-our $VERSION = "3.4";
+our $VERSION = "3.7.4";
 
 use strict;
 
@@ -26,7 +26,7 @@ sub init {
     $executor_options->arguments(),
   };
 
-  $this->parse_options($args, $spec);
+  $this->parse_options($args, $spec, ['bundling']);
 
   my $expression = $executor_options->get_string($args);
   my $executor = App::RecordStream::Executor->new($expression);
@@ -101,6 +101,7 @@ sub usage {
   my $this = shift;
 
   my $options = [
+    App::RecordStream::Executor::options_help(),
     ['v', 'Anti-match.  Records NOT matching <expr> will be returned'],
     ['C NUM', 'Provide NUM records of context around matches, equivalent to -A NUM and -B NUM'],
     ['A NUM', 'Print out NUM following records after a match'],
@@ -125,7 +126,9 @@ Examples:
    Filter to records with field 'name' equal to 'John'
       recs-grep '\$r->{name} eq "John"'
    Find fields without ppid = 3456
-     recs-grep -v '{{ppid}} == 3456'
+      recs-grep -v '{{ppid}} == 3456'
+   Filter to records with all methods equal to 'PUT'
+      recs-grep -MList::MoreUtils=all 'all { \$_ eq 'PUT' } \@{\$r->{methods}}'
 USAGE
 }
 

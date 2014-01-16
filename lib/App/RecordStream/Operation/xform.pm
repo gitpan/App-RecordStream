@@ -1,6 +1,6 @@
 package App::RecordStream::Operation::xform;
 
-our $VERSION = "3.4";
+our $VERSION = "3.7.4";
 
 use strict;
 
@@ -28,7 +28,7 @@ sub init {
     $executor_options->arguments(),
   };
 
-  $this->parse_options($args, $spec);
+  $this->parse_options($args, $spec, ['bundling']);
 
   my $expression = $executor_options->get_string($args);
   my $executor = $this->create_executor($expression, $post_snippet, $pre_snippet);
