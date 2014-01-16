@@ -313,5 +313,6 @@ tests/RecordStream/Operation/xform.t
 tests/RecordStream/OptionalRequire.t
 tests/RecordStream/OutputStream.t
 tests/RecordStream/Record.t
+update_versions.sh
 META.yml                                 Module YAML meta-data (added by MakeMaker)
 META.json                                Module JSON meta-data (added by MakeMaker)
