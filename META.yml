@@ -42,4 +42,4 @@ requires:
   Tie::Hash: 0
   Tie::IxHash: 0
   XML::Twig: 0
-version: v4.0.0
+version: v4.0.1
