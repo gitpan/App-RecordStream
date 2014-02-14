@@ -1,6 +1,6 @@
 package App::RecordStream::Operation::flatten;
 
-our $VERSION = "4.0.3";
+our $VERSION = "4.0.4";
 
 use strict;
 
@@ -151,7 +151,7 @@ sub usage {
   return <<USAGE;
 Usage: recs-flatten <args> [<files>]
    __FORMAT_TEXT__
-   Flatten nested structues in records.
+   Flatten nested structures in records.
 
    NOTE:  This script implements a strategy for dealing with nested structures
    that is almost always better handled by using keyspecs or keygroups.  It
