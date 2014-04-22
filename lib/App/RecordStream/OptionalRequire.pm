@@ -15,11 +15,14 @@ Class for optionally requiring a set of modules
 
 =head1 SYNOPSIS
 
-BEGIN { require App::RecordStream::OptionalRequire qw(optional_require); optional_require(qw(Foo::Bar Biz::Zip)); }
+    BEGIN {
+        use App::RecordStream::OptionalRequire qw(optional_require);
+        optional_require(qw(Foo::Bar Biz::Zip));
+    }
 
 =cut
 
-our $VERSION = "4.0.4";
+our $VERSION = "4.0.5";
 
 use strict;
 use warnings;

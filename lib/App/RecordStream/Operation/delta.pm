@@ -1,6 +1,6 @@
 package App::RecordStream::Operation::delta;
 
-our $VERSION = "4.0.4";
+our $VERSION = "4.0.5";
 
 use strict;
 
@@ -18,7 +18,7 @@ sub init
 
   $this->parse_options($args, $spec);
 
-  usage('Must specify --key') unless $key_groups->has_any_group();
+  die "Must specify --key\n" unless $key_groups->has_any_group();
 
   $this->{'KEY_GROUPS'} = $key_groups;
 }

@@ -4,7 +4,7 @@
       "Ben Bernard - perlhacker@benjaminbernard.com Keith Amling - keith.amling@gmail.com"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "ExtUtils::MakeMaker version 6.66, CPAN::Meta::Converter version 2.132830",
+   "generated_by" : "ExtUtils::MakeMaker version 6.66, CPAN::Meta::Converter version 2.140640",
    "license" : [
       "mit"
    ],
@@ -60,5 +60,5 @@
       }
    },
    "release_status" : "stable",
-   "version" : "v4.0.4"
+   "version" : "v4.0.5"
 }

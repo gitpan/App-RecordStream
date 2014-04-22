@@ -1,6 +1,6 @@
 package App::RecordStream::Operation::join;
 
-our $VERSION = "4.0.4";
+our $VERSION = "4.0.5";
 
 use strict;
 
@@ -32,19 +32,14 @@ sub init {
 
   $this->parse_options($args, $spec);
 
-  if ( ! @$args ) {
-    die("You must provide inputkey");
-  }
+  my $inputkey = shift @$args
+    or die "You must provide inputkey\n";
 
-  my $inputkey = shift @$args;
+  my $dbkey = shift @$args
+    or die "You must provide dbkey\n";
 
-  die("You must provide dbkey") unless (@$args);
-
-  my $dbkey = shift @$args;
-
-  $this->usage("You must provide dbfile") unless (@$args);
-
-  my $dbfile = shift @$args;
+  my $dbfile = shift @$args
+    or die "You must provide dbfile\n";
 
   $this->{'ACCUMULATE_RIGHT'} = $accumulate_right;
   $this->{'DB_KEY'}           = $dbkey;
@@ -266,7 +261,8 @@ Operation:
    App::RecordStream::Record object for the db record, and \$i is set to a 
    App::RecordStream::Record object for the input record. The \$d record is
    used for the result. Thus, if you provide an empty operation, the result
-   will contain only fields from the db record.
+   will contain only fields from the db record. Note that an empty operation is
+   different from no --operation at all.
    __FORMAT_TEXT__
 
 Examples:
