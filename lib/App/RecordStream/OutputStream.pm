@@ -34,14 +34,14 @@ recs processes.
 
 =cut
 
-our $VERSION = "4.0.7";
+our $VERSION = "4.0.8";
 
 use strict;
 use warnings;
 
-use JSON;
+use JSON::MaybeXS;
 
-my $json = JSON::XS->new();
+my $json = JSON->new();
 $json->allow_nonref(1);
 $json->allow_blessed(1);
 $json->convert_blessed(1);

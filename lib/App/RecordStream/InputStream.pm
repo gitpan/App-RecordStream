@@ -72,18 +72,18 @@ streams are exhausted
 
 =cut
 
-our $VERSION = "4.0.7";
+our $VERSION = "4.0.8";
 
 use strict;
 use warnings;
 
 use IO::String;
-use JSON;
+use JSON::MaybeXS;
 
 use App::RecordStream::Record;
 require App::RecordStream::Operation;
 
-my $json = new JSON;
+my $json = JSON->new;
 
 my $ONE_OF = [qw(FH STRING FILE)];
 

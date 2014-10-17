@@ -1,6 +1,6 @@
 package App::RecordStream::Operation::fromjsonarray;
 
-our $VERSION = "4.0.7";
+our $VERSION = "4.0.8";
 
 use strict;
 use warnings;
@@ -9,7 +9,7 @@ use base qw(App::RecordStream::Operation);
 
 use App::RecordStream::Record;
 
-use JSON;
+use JSON::MaybeXS;
 
 sub init {
   my ($this, $args) = @_;
