@@ -1,13 +1,14 @@
 package App::RecordStream::Operation::fromdb;
 
-our $VERSION = "4.0.8";
+our $VERSION = "4.0.9";
 
 use strict;
 use warnings;
 
 use base qw(App::RecordStream::Operation);
 
-use DBI;
+use App::RecordStream::OptionalRequire 'DBI';
+BEGIN { App::RecordStream::OptionalRequire::require_done() }
 
 use App::RecordStream::DBHandle;
 use App::RecordStream::Record;

@@ -4,7 +4,7 @@ author:
   - 'Ben Bernard <perlhacker@benjaminbernard.com>'
   - 'Keith Amling <keith.amling@gmail.com>'
 build_requires:
-  Test::More: '0'
+  Test::More: '0.88'
 configure_requires:
   ExtUtils::MakeMaker: '0'
 dynamic_config: 0
@@ -96,9 +96,9 @@ requires:
   Tie::Hash: '0'
 resources:
   bugtracker: https://rt.cpan.org/Dist/Display.html?Name=App-RecordStream
-  homepage: https://github.com/tsibley/RecordStream
+  homepage: https://github.com/benbernard/RecordStream
   repository: https://github.com/benbernard/RecordStream.git
-version: 4.0.8
+version: 4.0.9
 x_contributors:
   - 'Ben Bernard <github@benjaminbernard.com>'
   - 'Brandon Forehand <b4hand@users.sf.net>'

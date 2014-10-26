@@ -1,6 +1,6 @@
 package App::RecordStream::Operation::fromjsonarray;
 
-our $VERSION = "4.0.8";
+our $VERSION = "4.0.9";
 
 use strict;
 use warnings;
@@ -58,12 +58,11 @@ sub get_records_from_handle {
   my $fields = $this->{'FIELDS'};
   my $has_fields = scalar @$fields;
 
-  local $/;
-  my $contents = <$fh>;
+  my $contents = do { local $/; <$fh> };
 
-  my $items = $json->decode($contents);
+  my @arrays = $json->incr_parse($contents);
 
-  for my $item (@$items) {
+  for my $item (map { @$_ } @arrays) {
     $item = App::RecordStream::Record->new($item);
 
     my $record = $item;

@@ -1,6 +1,6 @@
 package App::RecordStream::Operation::fromsplit;
 
-our $VERSION = "4.0.8";
+our $VERSION = "4.0.9";
 
 use strict;
 
@@ -60,7 +60,6 @@ sub accept_line {
   my $line = shift;
 
   if ($this->{'HEADER'}) {
-    my $delim = $this->get_delimiter();
     $this->add_field($_) for @{$this->get_values_for_line($line)};
     delete $this->{'HEADER'};
   }

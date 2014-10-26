@@ -189,7 +189,7 @@
       },
       "test" : {
          "requires" : {
-            "Test::More" : "0"
+            "Test::More" : "0.88"
          }
       }
    },
@@ -199,14 +199,14 @@
          "mailto" : "bug-App-RecordStream@rt.cpan.org",
          "web" : "https://rt.cpan.org/Dist/Display.html?Name=App-RecordStream"
       },
-      "homepage" : "https://github.com/tsibley/RecordStream",
+      "homepage" : "https://github.com/benbernard/RecordStream",
       "repository" : {
          "type" : "git",
          "url" : "https://github.com/benbernard/RecordStream.git",
          "web" : "https://github.com/benbernard/RecordStream"
       }
    },
-   "version" : "4.0.8",
+   "version" : "4.0.9",
    "x_contributors" : [
       "Ben Bernard <github@benjaminbernard.com>",
       "Brandon Forehand <b4hand@users.sf.net>",
