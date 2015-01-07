@@ -1,6 +1,6 @@
 package App::RecordStream::Operation::fromps;
 
-our $VERSION = "4.0.9";
+our $VERSION = "4.0.10";
 
 use strict;
 use warnings;
@@ -87,13 +87,35 @@ sub usage {
   my $this = shift;
 
   my @fields = Proc::ProcessTable->new()->fields();
-  my $all_fields = join (', ', @fields);
+  my $all_fields = join (', ', grep { defined } @fields);
 
   my $options = [
     [ 'keys <fields>', 'Fields to output.  May be specified multiple times, may be comma separated.  Default to all fields These are Proc::ProcessTable keys, and thus may not be keyspecs or groups'],
   ];
 
   my $args_string = $this->options_string($options);
+  my $default_fields = $ENV{GENERATING_STATIC_DOC} ? <<STATIC : <<DYNAMIC;
+Default fields for Linux:
+   __FORMAT_TEXT__
+   uid, gid, pid, fname, ppid, pgrp, sess, ttynum, flags, minflt, cminflt,
+   majflt, cmajflt, utime, stime, cutime, cstime, priority, start, size, rss,
+   wchan, time, ctime, state, euid, suid, fuid, egid, sgid, fgid, pctcpu,
+   pctmem, cmndline, exec, cwd
+   __FORMAT_TEXT__
+
+Default fields for OS X:
+   __FORMAT_TEXT__
+   pid, ppid, pgrp, uid, gid, euid, egid, suid, sgid, priority, size, rss,
+   flags, nice, sess, time, stime, utime, start, wchan, ttydev, ttynum, pctcpu,
+   pctmem, state, cmndline, fname
+   __FORMAT_TEXT__
+STATIC
+Default fields:
+   __FORMAT_TEXT__
+   $all_fields
+   __FORMAT_TEXT__
+DYNAMIC
+  chomp $default_fields;
 
   return <<USAGE;
 Usage: recs-fromps <args>
@@ -103,10 +125,7 @@ Usage: recs-fromps <args>
 
 $args_string
 
-Default fields:
-   __FORMAT_TEXT__
-   $all_fields
-   __FORMAT_TEXT__
+$default_fields
 
 Examples:
    Get records for the process table
